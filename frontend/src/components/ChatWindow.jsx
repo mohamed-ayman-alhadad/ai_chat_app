@@ -11,72 +11,48 @@ function ChatWindow({ messages, dark }) {
   return (
     <>
       <style>{`
-        .chat-window {
-          flex: 1;
-          overflow-y: auto;
-          padding: 24px 20px 12px;
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-          scrollbar-width: thin;
-          scrollbar-color: var(--border) transparent;
-          background: var(--bg);
+        .chat-win {
+          flex:1; overflow-y:auto; padding:20px 16px 8px;
+          display:flex; flex-direction:column; gap:2px;
+          scrollbar-width:thin; scrollbar-color:var(--border) transparent;
+          background:var(--bg);
         }
+        @media(max-width:480px){ .chat-win{padding:14px 10px 6px;} }
 
-        .empty-state {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          gap: 16px;
-          padding-bottom: 80px;
+        .empty {
+          flex:1; display:flex; flex-direction:column;
+          align-items:center; justify-content:center;
+          gap:14px; padding-bottom:60px; padding:20px 20px 80px;
+          text-align:center;
         }
         .empty-icon {
-          width: 64px; height: 64px;
-          background: linear-gradient(135deg, var(--accent), var(--accent2));
-          border-radius: 20px;
-          display: flex; align-items: center; justify-content: center;
-          font-size: 28px;
-          box-shadow: 0 8px 32px rgba(124, 109, 250, 0.25);
+          width:58px; height:58px;
+          background:linear-gradient(135deg,var(--accent),var(--accent2));
+          border-radius:18px; display:flex; align-items:center; justify-content:center;
+          font-size:26px; box-shadow:0 8px 28px rgba(124,109,250,.22);
+          flex-shrink:0;
         }
-        .empty-title {
-          font-size: 20px; font-weight: 700;
-          color: var(--text);
-          letter-spacing: -0.5px;
-        }
-        .empty-sub {
-          font-size: 13px; color: var(--muted);
-          text-align: center; max-width: 280px;
-          line-height: 1.6;
-        }
-        .empty-chips {
-          display: flex; flex-wrap: wrap; gap: 8px;
-          justify-content: center; margin-top: 8px;
-        }
+        .empty-title { font-size:clamp(16px,4vw,20px); font-weight:700; letter-spacing:-.5px; }
+        .empty-sub { font-size:clamp(12px,3vw,13px); color:var(--muted); max-width:260px; line-height:1.6; }
+        .chips { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:6px; }
         .chip {
-          padding: 6px 14px;
-          background: var(--surface);
-          border: 1px solid var(--border);
-          border-radius: 999px;
-          font-size: 12px; color: var(--muted);
-          cursor: pointer; transition: all 0.15s;
-          font-family: inherit;
+          padding:6px 13px; background:var(--surface);
+          border:1px solid var(--border); border-radius:999px;
+          font-size:12px; color:var(--muted); cursor:pointer;
+          transition:all .15s; font-family:inherit;
+          white-space:nowrap;
         }
-        .chip:hover {
-          border-color: var(--accent);
-          color: var(--accent);
-          background: var(--surface2);
-        }
+        .chip:hover{border-color:var(--accent);color:var(--accent);background:var(--surface2)}
+        @media(max-width:360px){ .chip{font-size:11px; padding:5px 10px;} }
       `}</style>
 
-      <div className="chat-window">
+      <div className="chat-win">
         {messages.length === 0 ? (
-          <div className="empty-state">
+          <div className="empty">
             <div className="empty-icon">✦</div>
             <div className="empty-title">How can I help?</div>
-            <div className="empty-sub">Ask me anything, generate images, or use your voice.</div>
-            <div className="empty-chips">
+            <div className="empty-sub">Ask anything, generate images, or use your voice.</div>
+            <div className="chips">
               <button className="chip">Write some code</button>
               <button className="chip">🎨 Draw a landscape</button>
               <button className="chip">Explain a concept</button>
@@ -84,9 +60,7 @@ function ChatWindow({ messages, dark }) {
             </div>
           </div>
         ) : (
-          messages.map((msg, index) => (
-            <MessageBubble key={index} message={msg} dark={dark} />
-          ))
+          messages.map((msg, i) => <MessageBubble key={i} message={msg} dark={dark} />)
         )}
         <div ref={bottomRef} />
       </div>

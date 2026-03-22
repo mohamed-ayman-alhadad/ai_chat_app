@@ -9,9 +9,7 @@ function InputBar({ onSend, loading }) {
     if (!text.trim() || loading) return;
     onSend(text);
     setText("");
-    if (textareaRef.current) {
-      textareaRef.current.style.height = "auto";
-    }
+    if (textareaRef.current) textareaRef.current.style.height = "auto";
   };
 
   const handleKeyDown = (e) => {
@@ -25,7 +23,6 @@ function InputBar({ onSend, loading }) {
     setText((prev) => (prev ? prev + " " + transcript : transcript));
   };
 
-  // Auto-resize textarea
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
@@ -36,138 +33,97 @@ function InputBar({ onSend, loading }) {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&display=swap');
-
-        .input-area {
-          padding: 12px 16px 16px;
-          background: var(--bg);
-          border-top: 1px solid var(--border);
-          flex-shrink: 0;
+        .inp-area {
+          padding:10px 14px 14px; background:var(--bg);
+          border-top:1px solid var(--border); flex-shrink:0;
         }
+        @media(max-width:480px){ .inp-area{padding:8px 10px 12px;} }
 
-        .input-box {
-          display: flex;
-          align-items: flex-end;
-          gap: 10px;
-          background: var(--surface);
-          border: 1px solid var(--border);
-          border-radius: 18px;
-          padding: 10px 12px;
-          transition: border-color 0.2s, box-shadow 0.2s;
+        .inp-box {
+          display:flex; align-items:flex-end; gap:8px;
+          background:var(--surface); border:1px solid var(--border);
+          border-radius:16px; padding:9px 10px;
+          transition:border-color .2s,box-shadow .2s;
         }
-        .input-box:focus-within {
-          border-color: var(--accent);
-          box-shadow: 0 0 0 3px rgba(124, 109, 250, 0.12);
+        .inp-box:focus-within{
+          border-color:var(--accent);
+          box-shadow:0 0 0 3px rgba(124,109,250,.1);
         }
 
-        .msg-textarea {
-          flex: 1;
-          background: none;
-          border: none;
-          outline: none;
-          resize: none;
-          font-family: 'Syne', sans-serif;
-          font-size: 14px;
-          color: var(--text);
-          line-height: 1.5;
-          min-height: 22px;
-          max-height: 120px;
-          overflow-y: auto;
-          scrollbar-width: thin;
+        .msg-ta {
+          flex:1; background:none; border:none; outline:none;
+          resize:none; font-family:var(--font);
+          font-size:clamp(13px,3.5vw,14px);
+          color:var(--text); line-height:1.5;
+          min-height:22px; max-height:120px; overflow-y:auto;
+          scrollbar-width:thin;
         }
-        .msg-textarea::placeholder { color: var(--muted); }
+        .msg-ta::placeholder{color:var(--muted);}
 
         .send-btn {
-          width: 36px; height: 36px;
-          background: linear-gradient(135deg, var(--accent), var(--accent2));
-          border: none; border-radius: 12px;
-          color: #fff; cursor: pointer;
-          display: flex; align-items: center; justify-content: center;
-          font-size: 16px;
-          flex-shrink: 0;
-          transition: opacity 0.2s, transform 0.15s;
+          width:34px; height:34px; flex-shrink:0;
+          background:linear-gradient(135deg,var(--accent),var(--accent2));
+          border:none; border-radius:10px; color:#fff;
+          cursor:pointer; display:flex; align-items:center; justify-content:center;
+          font-size:16px; transition:opacity .2s,transform .15s;
         }
-        .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
-        .send-btn:not(:disabled):hover { opacity: 0.85; transform: scale(1.05); }
-        .send-btn:not(:disabled):active { transform: scale(0.95); }
+        .send-btn:disabled{opacity:.35;cursor:not-allowed;}
+        .send-btn:not(:disabled):hover{opacity:.85;transform:scale(1.05);}
+        .send-btn:not(:disabled):active{transform:scale(.95);}
 
-        .send-icon {
-          display: inline-block;
-          transition: transform 0.2s;
-        }
-        .send-btn:not(:disabled):hover .send-icon { transform: translateX(2px) translateY(-2px); }
+        .send-icon{display:inline-block;transition:transform .2s;}
+        .send-btn:not(:disabled):hover .send-icon{transform:translateX(2px) translateY(-2px);}
 
-        .spinner {
-          width: 16px; height: 16px;
-          border: 2px solid rgba(255,255,255,0.3);
-          border-top-color: #fff;
-          border-radius: 50%;
-          animation: spin 0.7s linear infinite;
+        .spinner{
+          width:14px;height:14px;
+          border:2px solid rgba(255,255,255,.3);
+          border-top-color:#fff; border-radius:50%;
+          animation:spin .7s linear infinite;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin{to{transform:rotate(360deg)}}
 
-        .input-hint {
-          text-align: center;
-          font-size: 11px;
-          color: var(--muted);
-          margin-top: 8px;
-          font-family: 'JetBrains Mono', monospace;
+        .inp-hint {
+          text-align:center; font-size:10px; color:var(--muted);
+          margin-top:6px; font-family:var(--mono);
         }
+        @media(max-width:480px){ .inp-hint{display:none;} }
 
         /* Voice button override */
-        .voice-wrap button {
-          width: 36px !important;
-          height: 36px !important;
-          border-radius: 12px !important;
-          background: var(--surface2) !important;
-          border: 1px solid var(--border) !important;
-          font-size: 15px !important;
-          display: flex !important;
-          align-items: center !important;
-          justify-content: center !important;
-          color: var(--muted) !important;
-          transition: all 0.15s !important;
+        .vwrap button {
+          width:34px !important; height:34px !important;
+          border-radius:10px !important; background:var(--surface2) !important;
+          border:1px solid var(--border) !important; font-size:14px !important;
+          display:flex !important; align-items:center !important;
+          justify-content:center !important; color:var(--muted) !important;
+          transition:all .15s !important;
         }
-        .voice-wrap button:hover {
-          border-color: var(--accent) !important;
-          color: var(--accent) !important;
-          background: var(--surface) !important;
+        .vwrap button:hover{
+          border-color:var(--accent) !important;
+          color:var(--accent) !important;
+          background:var(--surface) !important;
         }
       `}</style>
 
-      <div className="input-area">
-        <div className="input-box">
-          <div className="voice-wrap">
+      <div className="inp-area">
+        <div className="inp-box">
+          <div className="vwrap">
             <VoiceButton onResult={handleVoiceResult} disabled={loading} />
           </div>
-
           <textarea
             ref={textareaRef}
-            className="msg-textarea"
-            placeholder="Message NeuralChat... (Shift+Enter for new line)"
+            className="msg-ta"
+            placeholder="Message NeuralChat..."
             value={text}
             onChange={(e) => setText(e.target.value)}
             onKeyDown={handleKeyDown}
             disabled={loading}
             rows={1}
           />
-
-          <button
-            className="send-btn"
-            onClick={handleSend}
-            disabled={loading || !text.trim()}
-          >
-            {loading ? (
-              <div className="spinner" />
-            ) : (
-              <span className="send-icon">↑</span>
-            )}
+          <button className="send-btn" onClick={handleSend} disabled={loading || !text.trim()}>
+            {loading ? <div className="spinner"/> : <span className="send-icon">↑</span>}
           </button>
         </div>
-
-        <div className="input-hint">
-          Enter to send · Shift+Enter for new line · 🎤 for voice
-        </div>
+        <div className="inp-hint">Enter to send · Shift+Enter new line · 🎤 voice</div>
       </div>
     </>
   );
