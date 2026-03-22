@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Environment variables (مهم جداً — السر بتاعك)
+.env
+*/.env
+
+# Build output
+frontend/dist/
+frontend/.vite/
+
+# OS files
+.DS_Store
+Thumbs.db
