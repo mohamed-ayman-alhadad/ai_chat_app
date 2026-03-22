@@ -106,14 +106,14 @@ function App() {
     setLoading(true);
     try {
       if (isImageRequest(text)) {
-        const res = await fetch("http://localhost:5000/image", {
+        const res = await fetch("https://aichatapp-production.up.railway.app/image", {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ prompt: text }),
         });
         const data = await res.json();
         updateChat(activeChatId, { role: "assistant", content: "", imageUrl: data.imageUrl });
       } else {
-        const res = await fetch("http://localhost:5000/chat", {
+        const res = await fetch("https://aichatapp-production.up.railway.app/chat", {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ message: text, sessionId: activeChat.sessionId }),
         });
